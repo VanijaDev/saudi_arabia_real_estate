@@ -17,6 +17,6 @@
   },
   "homepage": "https://github.com/VanijaDev/saudi_arabia_real_estate#readme",
   "dependencies": {
-    "zeppelin-solidity": "^1.12.0"
+    "openzeppelin-solidity": "^2.3.0"
   }
 }
