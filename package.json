@@ -16,7 +16,8 @@
     "url": "https://github.com/VanijaDev/saudi_arabia_real_estate/issues"
   },
   "homepage": "https://github.com/VanijaDev/saudi_arabia_real_estate#readme",
-  "dependencies": {
-    "openzeppelin-solidity": "^2.3.0"
+  "devDependencies": {
+    "@openzeppelin/contracts": "^2.3.0",
+    "openzeppelin-test-helpers": "^0.4.0"
   }
 }
