@@ -65,10 +65,11 @@ contract("Residents", function (_accounts) {
       assert.equal(resident_0.fullName, "", "wrong fullName");
       assert.equal(resident_0.email, "", "wrong email");
       assert.equal(resident_0.password, "", "wrong password");
+      assert.equal((await residents.realtyIdsForResident.call(RESIDENT_0_ADDRESS)).length, 0, "wrong realtyIds");
     });
   });
 
-  describe("Update resident", () => {
+  describe("Update resident details", () => {
     const RESIDENT_0_FULLNAME = "RESIDENT_0_FULLNAME";
     const RESIDENT_0_EMAIL = "RESIDENT_0_EMAIL@gmail.com";
     const RESIDENT_0_PASSWORD = "RESIDENT_0_PASSWORD";
@@ -78,17 +79,17 @@ contract("Residents", function (_accounts) {
         from: OWNER
       });
 
-      await expectRevert(residents.updateResident(RESIDENT_0_FULLNAME, RESIDENT_0_EMAIL, RESIDENT_0_PASSWORD, {
+      await expectRevert(residents.updateResidentDetails(RESIDENT_0_FULLNAME, RESIDENT_0_EMAIL, RESIDENT_0_PASSWORD, {
         from: RESIDENT_0_ADDRESS
       }), "Wrong resident");
     });
 
-    it("should update obj with correct info", async () => {
+    it("should update obj with correct details", async () => {
       await residents.addResident(RESIDENT_0_ADDRESS, {
         from: OWNER
       });
 
-      await residents.updateResident(RESIDENT_0_FULLNAME, RESIDENT_0_EMAIL, RESIDENT_0_PASSWORD, {
+      await residents.updateResidentDetails(RESIDENT_0_FULLNAME, RESIDENT_0_EMAIL, RESIDENT_0_PASSWORD, {
         from: RESIDENT_0_ADDRESS
       });
       let resident_0 = await residents.residents.call(RESIDENT_0_ADDRESS);
@@ -98,4 +99,60 @@ contract("Residents", function (_accounts) {
       assert.equal(resident_0.password, RESIDENT_0_PASSWORD, "wrong password");
     });
   });
+
+  describe.only("Realty for resident", async () => {
+    it("should fail if not owner", async () => {
+      await residents.addResident(RESIDENT_0_ADDRESS, {
+        from: OWNER
+      });
+
+      await expectRevert(residents.addResidentRealty(RESIDENT_0_ADDRESS, 111, {
+        from: RESIDENT_0_ADDRESS
+      }), "Ownable: caller is not the owner");
+    });
+
+    it("should fail if no resident with such Ethereum address", async () => {
+      await expectRevert(residents.addResidentRealty(RESIDENT_0_ADDRESS, 111, {
+        from: OWNER
+      }), "No such resident");
+    });
+
+    it("should add realty id", async () => {
+      await residents.addResident(RESIDENT_0_ADDRESS, {
+        from: OWNER
+      });
+
+      await residents.addResidentRealty(RESIDENT_0_ADDRESS, 111, {
+        from: OWNER
+      });
+
+      assert.equal(0, (await residents.realtyIdsForResident.call(RESIDENT_0_ADDRESS))[0].cmp(new BN(111)), "wrong realty ids after push id");
+    });
+
+    it("should return correct realty ids", async () => {
+      await residents.addResident(RESIDENT_0_ADDRESS, {
+        from: OWNER
+      });
+
+      //  1
+      await residents.addResidentRealty(RESIDENT_0_ADDRESS, 111, {
+        from: OWNER
+      });
+      assert.equal(0, (await residents.realtyIdsForResident.call(RESIDENT_0_ADDRESS))[0].cmp(new BN(111)), "wrong realty ids after push id");
+
+      //  2
+      await residents.addResidentRealty(RESIDENT_0_ADDRESS, 222, {
+        from: OWNER
+      });
+      assert.equal(0, (await residents.realtyIdsForResident.call(RESIDENT_0_ADDRESS))[0].cmp(new BN(111)), "wrong realty ids after push id - 0");
+      assert.equal(0, (await residents.realtyIdsForResident.call(RESIDENT_0_ADDRESS))[1].cmp(new BN(222)), "wrong realty ids after push id - 1");
+
+      //  3
+      await residents.addResidentRealty(RESIDENT_0_ADDRESS, 333, {
+        from: OWNER
+      });
+      assert.equal(0, (await residents.realtyIdsForResident.call(RESIDENT_0_ADDRESS))[2].cmp(new BN(333)), "wrong realty ids after push id - 2");
+    });
+  });
+
 });

@@ -15,6 +15,7 @@ contract Residents is Ownable {
     string fullName;
     string email;
     string password;
+    uint256[] realtyIds;
   }
 
   mapping(address => Resident) public residents;
@@ -27,8 +28,18 @@ contract Residents is Ownable {
    */
   function addResident(address _address) public onlyOwner {
     require(residents[_address].addr != _address, "Resident exists");
-    residents[_address] = Resident({addr: _address, fullName: "", email: "", password: ""});
+    residents[_address].addr = _address;
     residentAmount = residentAmount.add(1);
+  }
+
+  /**
+    @dev Adds realty id to resident object.
+    @param _address  Resident Ethereum address.
+    @param _realtyId  Realty id.
+   */
+  function addResidentRealty(address _address, uint256 _realtyId) public onlyOwner {
+    require(residents[_address].addr == _address, "No such resident");
+    residents[_address].realtyIds.push(_realtyId);
   }
 
   /**
@@ -37,11 +48,20 @@ contract Residents is Ownable {
     @param _email  Resident email.
     @param _password  Resident password.
    */
-  function updateResident(string memory _fullName, string memory _email, string memory _password) public {
+  function updateResidentDetails(string memory _fullName, string memory _email, string memory _password) public {
     require(residents[msg.sender].addr == msg.sender, "Wrong resident");
 
     residents[msg.sender].fullName = _fullName;
     residents[msg.sender].email = _email;
     residents[msg.sender].password = _password;
+  }
+  
+  /**
+    @dev returns resident realty ids.
+    @param _address  Resident Ethereum address.
+    @return Realty ids
+   */
+  function realtyIdsForResident(address _address) public view returns (uint256[] memory) {
+    return residents[_address].realtyIds;
   }
 }
