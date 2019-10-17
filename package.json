@@ -18,6 +18,6 @@
   "homepage": "https://github.com/VanijaDev/saudi_arabia_real_estate#readme",
   "devDependencies": {
     "@openzeppelin/contracts": "^2.3.0",
-    "openzeppelin-test-helpers": "^0.4.0"
+    "@openzeppelin/test-helpers": "^0.5.3"
   }
 }

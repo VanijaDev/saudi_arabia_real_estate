@@ -8,7 +8,7 @@ const {
   ether,
   expectEvent,
   expectRevert
-} = require('openzeppelin-test-helpers');
+} = require('@openzeppelin/test-helpers');
 
 contract("Residents", function (_accounts) {
   const OWNER = _accounts[0];
