@@ -11,6 +11,7 @@ contract Residents is Ownable {
   using SafeMath for uint256;
 
   struct Resident {
+    uint256 id;
     address addr;
     string fullName;
     string email;
@@ -28,6 +29,8 @@ contract Residents is Ownable {
    */
   function addResident(address _address) public onlyOwner {
     require(residents[_address].addr != _address, "Resident exists");
+    
+    residents[_address].id = residentAmount;
     residents[_address].addr = _address;
     residentAmount = residentAmount.add(1);
   }
@@ -39,6 +42,7 @@ contract Residents is Ownable {
    */
   function addResidentRealty(address _address, uint256 _realtyId) public onlyOwner {
     require(residents[_address].addr == _address, "No such resident");
+    
     residents[_address].realtyIds.push(_realtyId);
   }
 
@@ -57,11 +61,22 @@ contract Residents is Ownable {
   }
   
   /**
-    @dev returns resident realty ids.
+    @dev Returns resident realty ids.
     @param _address  Resident Ethereum address.
-    @return Realty ids
+    @return Realty ids.
    */
   function realtyIdsForResident(address _address) public view returns (uint256[] memory) {
     return residents[_address].realtyIds;
+  }
+
+  /**
+    @dev Returns resident id.
+    @param _address  Resident Ethereum address.
+    @return Resident id.
+   */
+  function residentId(address _address) public view returns(uint256) {
+    require(residents[_address].addr == _address, "Wrong resident address");
+
+    return residents[_address].id;
   }
 }

@@ -57,15 +57,29 @@ contract("Residents", function (_accounts) {
     });
 
     it("should create resident obj with correct address, but other empty fields", async () => {
+      //  1
       await residents.addResident(RESIDENT_0_ADDRESS, {
         from: OWNER
       });
       let resident_0 = await residents.residents.call(RESIDENT_0_ADDRESS);
       assert.equal(resident_0.addr, RESIDENT_0_ADDRESS, "wrong address");
+      assert.equal(resident_0.id, 0, "wrong id");
       assert.equal(resident_0.fullName, "", "wrong fullName");
       assert.equal(resident_0.email, "", "wrong email");
       assert.equal(resident_0.password, "", "wrong password");
       assert.equal((await residents.realtyIdsForResident.call(RESIDENT_0_ADDRESS)).length, 0, "wrong realtyIds");
+
+      //  2
+      await residents.addResident(RESIDENT_1_ADDRESS, {
+        from: OWNER
+      });
+      let resident_1 = await residents.residents.call(RESIDENT_1_ADDRESS);
+      assert.equal(resident_1.addr, RESIDENT_1_ADDRESS, "wrong address 1");
+      assert.equal(resident_1.id, 1, "wrong id 1");
+      assert.equal(resident_1.fullName, "", "wrong fullName 1");
+      assert.equal(resident_1.email, "", "wrong email 1");
+      assert.equal(resident_.password, "", "wrong password 1");
+      assert.equal((await residents.realtyIdsForResident.call(RESIDENT_1_ADDRESS)).length, 0, "wrong realtyIds 1");
     });
   });
 
@@ -93,6 +107,7 @@ contract("Residents", function (_accounts) {
         from: RESIDENT_0_ADDRESS
       });
       let resident_0 = await residents.residents.call(RESIDENT_0_ADDRESS);
+      assert.equal(resident_0.id, 0, "wrong id");
       assert.equal(resident_0.addr, RESIDENT_0_ADDRESS, "wrong address");
       assert.equal(resident_0.fullName, RESIDENT_0_FULLNAME, "wrong fullName");
       assert.equal(resident_0.email, RESIDENT_0_EMAIL, "wrong email");
@@ -100,7 +115,7 @@ contract("Residents", function (_accounts) {
     });
   });
 
-  describe.only("Realty for resident", async () => {
+  describe("Realty for resident", async () => {
     it("should fail if not owner", async () => {
       await residents.addResident(RESIDENT_0_ADDRESS, {
         from: OWNER
